@@ -6,11 +6,9 @@
 // This is a comment written by somebody else.
 
 int first_function(int64_t foo, uint64_t bar);
-int next_function(int64_t foo, uint64_t bar[]);
+int next_function(int64_t foo, uint64_t bar);
 int stringy_bob(int64_t foo, uint64_t bar, char *str);
-//int may_the_lord_have_mercy_on_stringy_bob(int64_t foo, uint64_t bar char *str[]);
-
-enum {
+typedef enum {
     fish = 123,
     chips = 321,
 }an_enum;

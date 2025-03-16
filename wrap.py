@@ -2,10 +2,14 @@ import sys
 import re
 
 wrap=sys.stdin.read()
+if len(sys.argv) == 2:
+    print('#include "%s"'%sys.argv[1])
+
 statements = [statement for statement in [statement.strip() for statement in re.split('\s*;\s*', wrap) if len(statement)]]
 
 functions = []
 enums = []
+enum_names = {}
 for statement in statements:
     if statement[-1] == ')':
         bracket = [chunk.strip() for chunk in re.split(r'(\([^\)]*\))', statement) if len(chunk.strip())]
@@ -24,6 +28,7 @@ for statement in statements:
         identifier = bracket[2]
         items=[re.split(r'\s *= \s*', item.strip()) for item in bracket[1][1:-1].split(',') if len(item.strip())]
         enums.append({'name':identifier, 'items':items})
+        enum_names[identifier] = 1
 
 for enum in enums:
     print("static char *value_of_enum_%s(char *str) {"%enum['name']);
@@ -36,17 +41,17 @@ for enum in enums:
 print("int handle_argc_argv(int argc, char *argv[]) {")
 print("    if(0) {}")
 for function in functions:
-
     pass_through = function['items'][-2]==['int', 'argc'] and function['items'][-1]==['string', 'argv[]']
-
     if pass_through:
         params = function['items'][0:-2]
     else:
         params = function['items']
-
     print("    else if (!strcmp(argv[0], \"%s\")) {"%(function['name']))
     for index, type_name in enumerate(params):
-        print("        %s %s = parse_%s(argv[%d]);"%(type_name[0], type_name[1], type_name[0], index + 1))
+        if type_name[0] in enum_names:
+            print("        %s %s = value_of_enum_%s(argv[%d]);"%(type_name[0], type_name[1], type_name[0], index + 1))
+        else:
+            print("        %s %s = parse_%s(argv[%d]);"%(type_name[0], type_name[1], type_name[0], index + 1))
     print("        %s("%function['name'],end='')
     for index, type_name in enumerate(params):
         print(type_name[1],end='')
@@ -55,7 +60,6 @@ for function in functions:
     if pass_through:
         print(', argc - %d, argv + %d'%(index + 2, index + 2),end='')
     print(");")
-
     print("    }")
 print("    return -1;")
 print("}")
