@@ -15,3 +15,4 @@ enum {
     chips = 321,
 }an_enum;
 int another_function(uint64_t self, char *blah, an_enum an_enum);
+int pass_through(uint64_t self, int argc, char *argv[]);

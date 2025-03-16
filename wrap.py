@@ -11,7 +11,6 @@ for statement in statements:
         bracket = [chunk.strip() for chunk in re.split(r'(\([^\)]*\))', statement) if len(chunk.strip())]
         identifier = bracket[0].split()[1]
         items=[item.strip() for item in bracket[1][1:-1].split(',') if len(item.strip())]
-#       print(identifier, items);
         call={'name':identifier, 'items':[]}
         for item in items:
             m = re.match(r'char\s*\*\s*(.*)', item)
@@ -37,26 +36,24 @@ for enum in enums:
 print("int handle_argc_argv(int argc, char *argv[]) {")
 print("    if(0) {}")
 for function in functions:
+
+    pass_through = function['items'][-2]==['int', 'argc'] and function['items'][-1]==['string', 'argv[]']
+
+    if pass_through:
+        params = function['items'][0:-2]
+    else:
+        params = function['items']
+
     print("    else if (!strcmp(argv[0], \"%s\")) {"%(function['name']))
-    for index, type_name in enumerate(function['items']):
-        if type_name[1][-1]==']':
-            if index + 1 != len(function['items']):
-                print("array can only be last element in list")
-                sys.exit(-1)
-            type_name[1] = type_name[1].split('[')[0]
-            print("        // array %s %s %d %d"%(type_name[0], type_name[1], index, len(function['items'])))
-        else:
-            print("        %s %s = parse_%s(argv[%d]);"%(type_name[0], type_name[1], type_name[0], index + 1))
+    for index, type_name in enumerate(params):
+        print("        %s %s = parse_%s(argv[%d]);"%(type_name[0], type_name[1], type_name[0], index + 1))
     print("        %s("%function['name'],end='')
-    for index, type_name in enumerate(function['items']):
-        if type_name[1][-1]==']':
-            if index + 1 != len(function['items']):
-                print("array can only be last element in list")
-                sys.exit(-1)
-            type_name[1] = type_name[1].split('[')[0]
+    for index, type_name in enumerate(params):
         print(type_name[1],end='')
-        if index + 1 != len(function['items']):
+        if index + 1 != len(params):
             print(",",end='')
+    if pass_through:
+        print(', argc - %d, argv + %d'%(index + 2, index + 2),end='')
     print(");")
 
     print("    }")
