@@ -8,7 +8,7 @@
 int first_function(int64_t foo, uint64_t bar);
 int next_function(int64_t foo, uint64_t bar[]);
 int stringy_bob(int64_t foo, uint64_t bar, char *str);
-int may_the_lord_have_mercy_on_stringy_bob(int64_t foo, uint64_t bar char *str[]);
+//int may_the_lord_have_mercy_on_stringy_bob(int64_t foo, uint64_t bar char *str[]);
 
 enum {
     fish = 123,
