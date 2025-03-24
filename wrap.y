@@ -163,6 +163,8 @@ void add_function(char *name)
         .items = type_param_items,
         .type_params = memcpy(calloc(size, 1), type_params, size),
     };
+    type_param_items = 0;
+    memset(type_params, 0, sizeof type_params);
 }
 
 int enumeration_elem_items;
@@ -216,6 +218,8 @@ void add_enumeration(char *name)
         .items = enumeration_elem_items,
         .enumeration_elems = memcpy(calloc(size, 1), enumeration_elems, size),
     };
+    enumeration_items = 0;
+    memset(enumeration_elems, 0, sizeof enumeration_elems);
 }
 
 void dump_state(void)
@@ -240,6 +244,24 @@ void dump_state(void)
         for (int index = 0; index < function->items; ++index)
         {
             struct type_param *type_param = function->type_params + index;
+
+            printf("    ");
+            if (type_param->main_args)
+            {
+                printf("main_args\n");
+            }
+            else
+            {
+                if (type_param->type)
+                {
+                    printf("%s ", type_param->type);
+                }
+                else
+                {
+                    printf("char *");
+                }
+                printf("%s\n", type_param->identifier);
+            }
         }
     }
 }
