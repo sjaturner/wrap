@@ -218,6 +218,32 @@ void add_enumeration(char *name)
     };
 }
 
+void dump_state(void)
+{
+    for (int index = 0; index < enumeration_items; ++index)
+    {
+        struct enumeration *enumeration = enumerations + index;
+
+        printf("enumeration %s\n", enumeration->name);
+        for (int index = 0; index < enumeration->items; ++index)
+        {
+            struct enumeration_elem *enumeration_elem = enumeration->enumeration_elems + index;
+            printf("    %s %d\n", enumeration_elem->name, enumeration_elem->val);
+        }
+    }
+
+    for (int index = 0; index < function_items; ++index)
+    {
+        struct function *function = functions + index;
+
+        printf("function %s\n", function->name);
+        for (int index = 0; index < function->items; ++index)
+        {
+            struct type_param *type_param = function->type_params + index;
+        }
+    }
+}
+
 void yyerror(const char *s)
 {
     extern int yylineno;
@@ -228,5 +254,10 @@ int main()
 {
     debug = 1;
     yyparse();
+
+    printf("\n");
+
+    dump_state();
+
     return 0;
 }
