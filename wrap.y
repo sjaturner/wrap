@@ -7,13 +7,9 @@ void yyerror(const char *s);
 int yylex();
 
 void add_type_param(char *type, char *identifier);
-void add_main_args(char *type, char *identifier);
-
+void add_main_args(void);
 void add_function(char *name);
-
-
 void add_enumeration_elem(char *name, int val);
-
 void add_enumeration(char *name);
 
 int debug;
@@ -42,11 +38,7 @@ prototypes:
 prototype:
     INT IDENTIFIER LPAREN param_list RPAREN SEMICOLON
     {
-        if (debug)
-        {
-            printf("Function: %s\n", $2);
-        }
-        free($2);
+        add_function($2);
     }
     ;
 
@@ -61,20 +53,11 @@ param_list:
 param:
     IDENTIFIER IDENTIFIER
     {
-        if (debug)
-        {
-            printf("  Parameter: %s %s\n", $1, $2);
-        }
-        free($1);
-        free($2);
+        add_type_param($1, $2);
     }
     | CHAR STAR IDENTIFIER
     {
-        if (debug)
-        {
-            printf("  Parameter: char *%s\n", $3);
-        }
-        free($3);
+        add_type_param(0, $3);
     }
     ;
 
@@ -82,12 +65,7 @@ param:
 argc_argv_special_case:
     INT IDENTIFIER COMMA CHAR STAR IDENTIFIER BRACKETS
     {
-        if (debug)
-        {
-            printf("  Special Case Parameters: int %s, char *%s[]\n", $2, $6);
-        }
-        free($2);
-        free($6);
+        add_main_args();
     }
     ;
 
@@ -95,11 +73,7 @@ argc_argv_special_case:
 enum_def:
     TYPEDEF ENUM LBRACE enum_list RBRACE IDENTIFIER SEMICOLON
     {
-        if (debug)
-        {
-            printf("Enum: %s\n", $6);
-        }
-        free($6);
+        add_enumeration($6);
     }
     ;
 
@@ -112,11 +86,7 @@ enum_list:
 enum_entry:
     IDENTIFIER ASSIGN NUMBER
     {
-        if (debug)
-        {
-            printf("  %s = %d\n", $1, $3);
-        }
-        free($1);
+        add_enumeration_elem($1, $3);
     }
     ;
 
@@ -138,6 +108,11 @@ struct type_param type_params[0x400];
 
 void add_type_param(char *type, char *identifier)
 {
+    if (debug)
+    {
+        printf("    %s %s %s\n", __func__, type ? type : "char *", identifier);
+    }
+
     assert(type_param_items + 1 < NELEM(type_params));
 
     type_params[type_param_items++] = (struct type_param)
@@ -147,8 +122,13 @@ void add_type_param(char *type, char *identifier)
     };
 }
 
-void add_main_args(char *type, char *identifier)
+void add_main_args(void)
 {
+    if (debug)
+    {
+        printf("    %s\n", __func__);
+    }
+
     assert(type_param_items + 1 < NELEM(type_params));
 
     type_params[type_param_items++] = (struct type_param)
@@ -169,6 +149,11 @@ struct function functions[0x400];
 
 void add_function(char *name)
 {
+    if (debug)
+    {
+        printf("%s %s\n", __func__, name);
+    }
+
     assert(function_items + 1 < NELEM(functions));
 
     int size = sizeof(struct type_param) * type_param_items;
@@ -191,6 +176,11 @@ struct enumeration_elem enumeration_elems[0x400];
 
 void add_enumeration_elem(char *name, int val)
 {
+    if (debug)
+    {
+        printf("    %s %s %d\n", __func__, name, val);
+    }
+
     assert(enumeration_elem_items + 1 < NELEM(enumeration_elems));
 
     enumeration_elems[enumeration_elem_items++] = (struct enumeration_elem)
@@ -212,6 +202,11 @@ struct enumeration enumerations[0x400];
 
 void add_enumeration(char *name)
 {
+    if (debug)
+    {
+        printf("%s %s\n", __func__, name);
+    }
+
     assert(enumeration_items + 1 < NELEM(enumerations));
 
     int size = sizeof(struct enumeration_elem) * enumeration_elem_items;
