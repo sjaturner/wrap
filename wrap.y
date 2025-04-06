@@ -12,8 +12,6 @@ void add_function(char *name);
 void add_enumeration_elem(char *name, int val);
 void add_enumeration(char *name);
 
-int debug;
-
 %}
 
 %union
@@ -105,6 +103,8 @@ struct type_param
 
 int type_param_items;
 struct type_param type_params[0x400];
+
+int debug;
 
 void add_type_param(char *type, char *identifier)
 {
@@ -218,7 +218,7 @@ void add_enumeration(char *name)
         .items = enumeration_elem_items,
         .enumeration_elems = memcpy(calloc(size, 1), enumeration_elems, size),
     };
-    enumeration_items = 0;
+    enumeration_elem_items = 0;
     memset(enumeration_elems, 0, sizeof enumeration_elems);
 }
 
@@ -272,10 +272,15 @@ void yyerror(const char *s)
     fprintf(stderr, "Error: %s at line:%d\n", s, yylineno);
 }
 
+char intro[] =
+
+"#define PARSE(TYPE, NAME, STR) TYPE NAME; memset(&NAME, 0, sizeof(NAME)); if (!parse_ ## TYPE(&NAME, STR)) { PRINT(\"failed to parse \\\"%s\\\" into %s\\n\", STR, #NAME); return -1;}";
+
 int main()
 {
-    debug = 1;
     yyparse();
+
+    printf("%s", intro);
 
     printf("\n");
 

@@ -6,7 +6,9 @@ parser: lex.yy.c wrap.tab.c
 	gcc -Wall -g $^ -o $@
 wrap.c: wrap.h parser
 	./parser < $< > $@
+test: wrap_utils.c test.c
+	gcc -Wall -g $^ -o $@
 clean:
-	rm -f lex.yy.c wrap.tab.h wrap.tab.c parser
+	rm -f lex.yy.c wrap.tab.h wrap.tab.c parser wrap.c
 	@echo done
 
