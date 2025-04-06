@@ -8,25 +8,25 @@
 
 int first_function(int64_t foo, uint64_t bar)
 {
-    printf("%s %" PRId64 "%" PRIx64 "\n", __func__, foo, bar);
+    printf("%s %" PRId64 " %" PRIx64 "\n", __func__, foo, bar);
     return 0;
 }
 
 int next_function(int64_t foo, uint64_t bar)
 {
-    printf("%s %" PRId64 "%" PRIx64 "\n", __func__, foo, bar);
+    printf("%s %" PRId64 " %" PRIx64 "\n", __func__, foo, bar);
     return 0;
 }
 
 int stringy_bob(int64_t foo, uint64_t bar, char *str)
 {
-    printf("%s %" PRId64 "%" PRIx64 "\%s\"\n", __func__, foo, bar, str);
+    printf("%s %" PRId64 " %" PRIx64 "\%s\"\n", __func__, foo, bar, str);
     return 0;
 }
 
 int another_function(uint64_t self, char *blah, an_enum an_enum)
 {
-    printf("%s %" PRIx64 "\%s\" %d\n", __func__, self, blah, an_enum);
+    printf("%s %" PRIx64 " \"%s\" %d\n", __func__, self, blah, an_enum);
     return 0;
 }
 
@@ -61,10 +61,14 @@ int main(int argc, char *argv[])
     char *av[10] = { };
     int ac = string_to_args(cmd, 10, av);
 
-    for (int index = 0; index < ac; ++index)
+    if (0)
     {
-        printf("|%s|\n", av[index]);
+        for (int index = 0; index < ac; ++index)
+        {
+            printf("|%s|\n", av[index]);
+        }
     }
+    wrap_argc_argv(ac, av);
     return 0;
 }
 

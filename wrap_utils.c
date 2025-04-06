@@ -4,6 +4,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+int parse_uint64_t(uint64_t *val, char *str)
+{
+    *val = strtoul(str, 0, 0);
+    return 1;
+}
+
+int parse_int64_t(int64_t *val, char *str)
+{
+    *val = strtol(str, 0, 0);
+    return 1;
+}
+
 int string_to_args(char *str, int limit, char *argv[])
 {
     if (strchr(str, '%'))
