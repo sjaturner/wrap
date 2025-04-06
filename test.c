@@ -8,31 +8,31 @@
 
 int first_function(int64_t foo, uint64_t bar)
 {
-    printf("%s %" PRId64 " %" PRIx64 "\n", __func__, foo, bar);
+    printf("%s %" PRId64 " %" PRIu64 "\n", __func__, foo, bar);
     return 0;
 }
 
 int next_function(int64_t foo, uint64_t bar)
 {
-    printf("%s %" PRId64 " %" PRIx64 "\n", __func__, foo, bar);
+    printf("%s %" PRId64 " %" PRIu64 "\n", __func__, foo, bar);
     return 0;
 }
 
 int stringy_bob(int64_t foo, uint64_t bar, char *str)
 {
-    printf("%s %" PRId64 " %" PRIx64 "\%s\"\n", __func__, foo, bar, str);
+    printf("%s %" PRId64 " %" PRIu64 " \"%s\"\n", __func__, foo, bar, str);
     return 0;
 }
 
 int another_function(uint64_t self, char *blah, an_enum an_enum)
 {
-    printf("%s %" PRIx64 " \"%s\" %d\n", __func__, self, blah, an_enum);
+    printf("%s %" PRIu64 " \"%s\" %d\n", __func__, self, blah, an_enum);
     return 0;
 }
 
 int pass_through(uint64_t self, int argc, char *argv[])
 {
-    printf("%s %" PRIx64 " ", __func__, self);
+    printf("%s %" PRIu64 " ", __func__, self);
     while (argc--)
     {
         printf("%s ", *argv++);

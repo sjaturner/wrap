@@ -34,3 +34,9 @@
 [ \n\t\r]+                    { /* Ignore everything else */ }
 
 %%
+
+void suppress_warnings(void)
+{
+    input();
+    yyunput(0,0);
+}
