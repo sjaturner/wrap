@@ -229,13 +229,13 @@ void dump_state(void)
         struct enumeration *enumeration = enumerations + index;
 
 //      printf("enumeration %s\n", enumeration->name);
-        printf("static int value_of_enum_%s(char *str) {\n", enumeration->name);
+        printf("static int parse_%s(%s *val, char *str) {\n", enumeration->name, enumeration->name);
         printf("    if (0) {}\n");
         for (int index = 0; index < enumeration->items; ++index)
         {
             struct enumeration_elem *enumeration_elem = enumeration->enumeration_elems + index;
 //          printf("    %s %d\n", enumeration_elem->name, enumeration_elem->val);
-            printf("    else if (!strcmp(str, \"%s\")) return %d;\n", enumeration_elem->name, enumeration_elem->val);
+            printf("    else if (!strcmp(str, \"%s\")) {*val = %d ; return 1;}\n", enumeration_elem->name, enumeration_elem->val);
         }
         printf("    else return 0;\n");
         printf("}\n");
