@@ -228,42 +228,79 @@ void dump_state(void)
     {
         struct enumeration *enumeration = enumerations + index;
 
-        printf("enumeration %s\n", enumeration->name);
+//      printf("enumeration %s\n", enumeration->name);
+        printf("static int value_of_enum_%s(char *str) {\n", enumeration->name);
+        printf("    if (0) {}\n");
         for (int index = 0; index < enumeration->items; ++index)
         {
             struct enumeration_elem *enumeration_elem = enumeration->enumeration_elems + index;
-            printf("    %s %d\n", enumeration_elem->name, enumeration_elem->val);
+//          printf("    %s %d\n", enumeration_elem->name, enumeration_elem->val);
+            printf("    else if (!strcmp(str, \"%s\")) return %d;\n", enumeration_elem->name, enumeration_elem->val);
         }
+        printf("    else return 0;\n");
+        printf("}\n");
+        printf("\n");
     }
 
+    printf("int wrap_argc_argv(int argc, char *argv[]) {\n");
+    printf("    if (0) {}\n");
     for (int index = 0; index < function_items; ++index)
     {
         struct function *function = functions + index;
 
-        printf("function %s\n", function->name);
+//      printf("function %s\n", function->name);
+        printf("    else if (!strcmp(argv[0], \"%s\")) {\n", function->name);
+
         for (int index = 0; index < function->items; ++index)
         {
             struct type_param *type_param = function->type_params + index;
 
-            printf("    ");
+//          printf("    ");
             if (type_param->main_args)
             {
-                printf("main_args\n");
+//              printf("main_args\n");
             }
             else
             {
                 if (type_param->type)
                 {
-                    printf("%s ", type_param->type);
+                    printf("        PARSE(%s, %s, argv[%d]);\n", type_param->type, type_param->identifier, index + 1);
                 }
                 else
                 {
-                    printf("char *");
+                    printf("        char *%s = argv[%d];\n", type_param->identifier, index + 1);
                 }
-                printf("%s\n", type_param->identifier);
             }
         }
+
+        printf("        return %s(", function->name);
+        for (int index = 0; index < function->items; ++index)
+        {
+            int last = index + 1 == function->items;
+
+            struct type_param *type_param = function->type_params + index;
+
+            if (type_param->main_args)
+            {
+                printf("argc - %d, argv + %d", index + 1, index + 1);
+            }
+            else
+            {
+                if (type_param->type)
+                {
+                    printf("%s%s", type_param->identifier, last ? "" : ", ");
+                }
+                else
+                {
+                    printf("%s%s", type_param->identifier, last ? "" : ", ");
+                }
+            }
+        }
+        printf(");\n");
+        printf("    }\n");
     }
+    printf("    return -1;\n");
+    printf("}\n");
 }
 
 void yyerror(const char *s)
@@ -274,6 +311,11 @@ void yyerror(const char *s)
 
 char intro[] =
 
+"#include \"wrap_utils.h\"\n"
+"#include \"wrap.h\"\n"
+"#include <stdint.h>\n"
+"#include <string.h>\n"
+"#include <stdio.h>\n"
 "#define PARSE(TYPE, NAME, STR) TYPE NAME; memset(&NAME, 0, sizeof(NAME)); if (!parse_ ## TYPE(&NAME, STR)) { PRINT(\"failed to parse \\\"%s\\\" into %s\\n\", STR, #NAME); return -1;}";
 
 int main()
