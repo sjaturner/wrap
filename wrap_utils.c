@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Provided as an example, in case you want to save up all the output and then emit it at the end of the wrapped function call. */
 enum
 {
     WRAP_BUFFER_SIZE = 0x400,
@@ -59,16 +60,15 @@ void wrap_init_buffer(void)
     wrap_printf = buffer_wrap_printf;
 }
 
-wrap_printf_t *wrap_printf = printf;
-
+/* The default is to use printf. */
 static void base_wrap_enter(void)
 {
-    wrap_printf("%s\n", __func__);
 }
+
+wrap_printf_t *wrap_printf = printf;
 
 static void base_wrap_leave(void)
 {
-    wrap_printf("%s\n", __func__);
 }
 
 void (*wrap_enter)(void) = base_wrap_enter;
