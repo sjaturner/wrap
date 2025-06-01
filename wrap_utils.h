@@ -12,4 +12,11 @@ int parse_uint8_t(uint8_t *val, char *str);
 int string_to_args(char *str, int limit, char *argv[]);
 int wrap_argc_argv(int argc, char *argv[]);
 
+typedef void wrap_printf_t(const char *fmt, ...) __attribute__ ((format (printf, 1, 2))); /* Ick for typedef but may be needed to get the format checks ... */
+extern wrap_printf_t *wrap_printf;
+extern void (*wrap_enter)(void);
+extern void (*wrap_leave)(void);
+
+
+
 #define WRAP_PRINTF printf
