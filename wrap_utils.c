@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 int parse_uint64_t(uint64_t *val, char *str)
 {
@@ -47,6 +48,31 @@ int parse_int64_t(int64_t *val, char *str)
         }
     }
 }
+
+#define PARSE_TYPE(TYPE, WIDE, MIN, MAX) \
+int parse_ ## TYPE(TYPE *val, char *str) \
+{ \
+    WIDE wide = 0; \
+ \
+    if (!parse_ ## WIDE(&wide, str)) \
+    { \
+        return *val = 0; \
+    } \
+    else if(wide < MIN || wide > MAX) \
+    { \
+        return *val = 0; \
+    } \
+ \
+    *val = wide; \
+    return 1; \
+}
+
+PARSE_TYPE(int32_t,   int64_t,   INT32_MIN,  INT32_MAX)
+PARSE_TYPE(uint32_t,  uint64_t,  0,          UINT32_MAX)
+PARSE_TYPE(int16_t,   int64_t,   INT16_MIN,  INT16_MAX)
+PARSE_TYPE(uint16_t,  uint64_t,  0,          UINT16_MAX)
+PARSE_TYPE(int8_t,    int64_t,   INT8_MIN,   INT8_MAX)
+PARSE_TYPE(uint8_t,   uint64_t,  0,          UINT8_MAX)
 
 int string_to_args(char *str, int limit, char *argv[])
 {
