@@ -5,6 +5,21 @@
 #include <string.h>
 #include <limits.h>
 
+wrap_printf_t *wrap_printf = printf;
+
+static void base_wrap_enter(void)
+{
+    wrap_printf("%s\n", __func__);
+}
+
+static void base_wrap_leave(void)
+{
+    wrap_printf("%s\n", __func__);
+}
+
+void (*wrap_enter)(void) = base_wrap_enter;
+void (*wrap_leave)(void) = base_wrap_leave;
+
 int parse_uint64_t(uint64_t *val, char *str)
 {
     if (!str)

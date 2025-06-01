@@ -242,7 +242,7 @@ void dump_state(void)
         printf("\n");
     }
 
-    printf("int wrap_argc_argv(int argc, char *argv[]) {\n");
+    printf("static int inner_wrap_argc_argv(int argc, char *argv[]) {\n");
     printf("    if (0) {}\n");
     for (int index = 0; index < function_items; ++index)
     {
@@ -301,6 +301,13 @@ void dump_state(void)
     }
     printf("    return -1;\n");
     printf("}\n");
+    printf("\n");
+    printf("int wrap_argc_argv(int argc, char *argv[]) {\n");
+    printf("    wrap_enter();\n");
+    printf("    int ret = inner_wrap_argc_argv(argc, argv);\n");
+    printf("    wrap_leave();\n");
+    printf("    return ret;\n");
+    printf("}\n");
 }
 
 void yyerror(const char *s)
@@ -316,7 +323,7 @@ char intro[] =
 "#include <stdint.h>\n"
 "#include <string.h>\n"
 "#include <stdio.h>\n"
-"#define PARSE(TYPE, NAME, STR) TYPE NAME; memset(&NAME, 0, sizeof(NAME)); if (!parse_ ## TYPE(&NAME, STR)) { WRAP_PRINTF(\"failed to parse \\\"%s\\\" into %s\\n\", STR, #NAME); return -1;}";
+"#define PARSE(TYPE, NAME, STR) TYPE NAME; memset(&NAME, 0, sizeof(NAME)); if (!parse_ ## TYPE(&NAME, STR)) { wrap_printf(\"failed to parse \\\"%s\\\" into %s\\n\", STR, #NAME); return -1;}";
 
 int main()
 {
