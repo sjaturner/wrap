@@ -1,9 +1,63 @@
 #include "wrap_utils.h"
+
 #include <ctype.h>
+#include <limits.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <limits.h>
+
+enum
+{
+    WRAP_BUFFER_SIZE = 0x400,
+    WRAP_BUFFER_USE = WRAP_BUFFER_SIZE - 1,
+};
+static char buffer[WRAP_BUFFER_SIZE];
+static uint32_t position;
+static int stop;
+
+static void buffer_wrap_enter(void)
+{
+    position = 0;
+    stop = 0;
+}
+
+int buffer_wrap_printf(const char *restrict fmt, ...)
+{
+    va_list ap = { };
+
+    if (stop)
+    {
+        return 0;
+    }
+
+    va_start(ap, fmt);
+    int n = vsnprintf(buffer + position, WRAP_BUFFER_USE - position, fmt, ap);
+    va_end(ap);
+
+    if (n < 0)
+    {
+        stop = 1;
+        return n;
+    }
+
+    position += n;
+
+    return n;
+}
+
+static void buffer_wrap_leave(void)
+{
+    buffer[WRAP_BUFFER_USE] = 0;
+    printf("%s", buffer);
+}
+
+void wrap_init_buffer(void)
+{
+    wrap_enter = buffer_wrap_enter;
+    wrap_leave = buffer_wrap_leave;
+    wrap_printf = buffer_wrap_printf;
+}
 
 wrap_printf_t *wrap_printf = printf;
 
@@ -19,6 +73,7 @@ static void base_wrap_leave(void)
 
 void (*wrap_enter)(void) = base_wrap_enter;
 void (*wrap_leave)(void) = base_wrap_leave;
+
 
 int parse_uint64_t(uint64_t *val, char *str)
 {

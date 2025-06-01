@@ -58,6 +58,9 @@ int main(int argc, char *argv[])
         strcat(cmd, " ");
     }
 
+
+    wrap_init_buffer();
+
     char *av[10] = { };
     int ac = string_to_args(cmd, 10, av);
 
