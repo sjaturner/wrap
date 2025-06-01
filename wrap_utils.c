@@ -6,14 +6,46 @@
 
 int parse_uint64_t(uint64_t *val, char *str)
 {
-    *val = strtoull(str, 0, 0);
-    return 1;
+    if (!str)
+    {
+        return 0;
+    }
+    else
+    {
+        char *pos = str;
+
+        *val = strtoull(str, &pos, 0);
+        if (pos == str + strlen(str))
+        {
+            return 1;
+        }
+        else
+        {
+            return *val = 0;
+        }
+    }
 }
 
 int parse_int64_t(int64_t *val, char *str)
 {
-    *val = strtoll(str, 0, 0);
-    return 1;
+    if (!str)
+    {
+        return 0;
+    }
+    else
+    {
+        char *pos = str;
+
+        *val = strtoll(str, &pos, 0);
+        if (pos == str + strlen(str))
+        {
+            return 1;
+        }
+        else
+        {
+            return *val = 0;
+        }
+    }
 }
 
 int string_to_args(char *str, int limit, char *argv[])
@@ -42,7 +74,7 @@ int string_to_args(char *str, int limit, char *argv[])
             {
                 in_quote = 0;
             }
-        } 
+        }
         else
         {
             if (last_space)
@@ -81,4 +113,3 @@ int string_to_args(char *str, int limit, char *argv[])
 
     return argc;
 }
-
