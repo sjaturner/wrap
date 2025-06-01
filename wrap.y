@@ -316,7 +316,7 @@ char intro[] =
 "#include <stdint.h>\n"
 "#include <string.h>\n"
 "#include <stdio.h>\n"
-"#define PARSE(TYPE, NAME, STR) TYPE NAME; memset(&NAME, 0, sizeof(NAME)); if (!parse_ ## TYPE(&NAME, STR)) { PRINT(\"failed to parse \\\"%s\\\" into %s\\n\", STR, #NAME); return -1;}";
+"#define PARSE(TYPE, NAME, STR) TYPE NAME; memset(&NAME, 0, sizeof(NAME)); if (!parse_ ## TYPE(&NAME, STR)) { WRAP_PRINTF(\"failed to parse \\\"%s\\\" into %s\\n\", STR, #NAME); return -1;}";
 
 int main()
 {

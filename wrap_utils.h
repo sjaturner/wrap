@@ -12,4 +12,4 @@ int parse_uint8_t(uint8_t *val, char *str);
 int string_to_args(char *str, int limit, char *argv[]);
 int wrap_argc_argv(int argc, char *argv[]);
 
-#define PRINT printf
+#define WRAP_PRINTF printf
