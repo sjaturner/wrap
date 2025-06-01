@@ -58,7 +58,6 @@ int main(int argc, char *argv[])
         strcat(cmd, " ");
     }
 
-
     wrap_init_buffer();
 
     char *av[10] = { };

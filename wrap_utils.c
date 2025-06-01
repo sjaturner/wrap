@@ -74,7 +74,6 @@ static void base_wrap_leave(void)
 void (*wrap_enter)(void) = base_wrap_enter;
 void (*wrap_leave)(void) = base_wrap_leave;
 
-
 int parse_uint64_t(uint64_t *val, char *str)
 {
     if (!str)
@@ -144,6 +143,119 @@ PARSE_TYPE(uint16_t,  uint64_t,  0,          UINT16_MAX)
 PARSE_TYPE(int8_t,    int64_t,   INT8_MIN,   INT8_MAX)
 PARSE_TYPE(uint8_t,   uint64_t,  0,          UINT8_MAX)
 
+int hex_digit(char c)
+{
+    if ('0' <= c && c <= '9')
+        return c - '0';
+    if ('a' <= c && c <= 'f')
+        return 10 + (c - 'a');
+    if ('A' <= c && c <= 'F')
+        return 10 + (c - 'A');
+    return -1;
+}
+
+int oct_digit(char c)
+{
+    if ('0' <= c && c <= '7')
+        return c - '0';
+    return -1;
+}
+
+void expand_c_escapes(char *out, const char *in)
+{
+    while (*in)
+    {
+        if (*in == '\\')
+        {
+            in++;
+            switch (*in)
+            {
+                case 'a':
+                    *out++ = '\a';
+                    in++;
+                    break;
+                case 'b':
+                    *out++ = '\b';
+                    in++;
+                    break;
+                case 'f':
+                    *out++ = '\f';
+                    in++;
+                    break;
+                case 'n':
+                    *out++ = '\n';
+                    in++;
+                    break;
+                case 'r':
+                    *out++ = '\r';
+                    in++;
+                    break;
+                case 't':
+                    *out++ = '\t';
+                    in++;
+                    break;
+                case 'v':
+                    *out++ = '\v';
+                    in++;
+                    break;
+                case '\\':
+                    *out++ = '\\';
+                    in++;
+                    break;
+                case '\'':
+                    *out++ = '\'';
+                    in++;
+                    break;
+                case '\"':
+                    *out++ = '\"';
+                    in++;
+                    break;
+                case '?':
+                    *out++ = '\?';
+                    in++;
+                    break;
+
+                case 'x':
+                    {
+                        in++;
+                        int val = 0, count = 0;
+                        while (hex_digit(*in) >= 0 && count < 2)
+                        {
+                            val = val * 16 + hex_digit(*in++);
+                            count++;
+                        }
+                        *out++ = (char)val;
+                        break;
+                    }
+
+                default:
+                    if (oct_digit(*in) >= 0)
+                    {           // Octal
+                        int val = 0, count = 0;
+                        while (oct_digit(*in) >= 0 && count < 3)
+                        {
+                            val = val * 8 + oct_digit(*in++);
+                            count++;
+                        }
+                        *out++ = (char)val;
+                    }
+                    else
+                    {
+                        *out++ = '\\';
+                        if (*in)
+                            *out++ = *in++;
+                    }
+                    break;
+            }
+        }
+        else
+        {
+            *out++ = *in++;
+        }
+    }
+    *out = '\0';
+}
+
 int string_to_args(char *str, int limit, char *argv[])
 {
     if (strchr(str, '%'))
@@ -153,9 +265,10 @@ int string_to_args(char *str, int limit, char *argv[])
 
     int len = strlen(str) + 1;
     char *buf = memset(valloc(len), 0, len);
-    snprintf(buf, len, str);
-    memcpy(str, buf, len);
+    memcpy(buf, str, strlen(str));
+    expand_c_escapes(str, buf);
 
+    printf("%s\n", str);
     char *scan = str;
     int in_quote = *scan == '"';
     int last_space = 1;
@@ -187,6 +300,7 @@ int string_to_args(char *str, int limit, char *argv[])
                     }
                 }
             }
+            in_quote = *scan == '"';
             *scan = this_space ? 0 : *scan;
         }
 
