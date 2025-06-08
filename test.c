@@ -5,7 +5,6 @@
 #include <string.h>
 #include <inttypes.h>
 
-
 int first_function(int64_t foo, uint64_t bar)
 {
     printf("%s %" PRId64 " %" PRIu64 "\n", __func__, foo, bar);

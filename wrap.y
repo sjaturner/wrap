@@ -11,7 +11,6 @@ void add_main_args(void);
 void add_function(char *name);
 void add_enumeration_elem(char *name, int val);
 void add_enumeration(char *name);
-
 %}
 
 %union
@@ -228,13 +227,11 @@ void dump_state(void)
     {
         struct enumeration *enumeration = enumerations + index;
 
-//      printf("enumeration %s\n", enumeration->name);
         printf("static int parse_%s(%s *val, char *str) {\n", enumeration->name, enumeration->name);
         printf("    if (0) {}\n");
         for (int index = 0; index < enumeration->items; ++index)
         {
             struct enumeration_elem *enumeration_elem = enumeration->enumeration_elems + index;
-//          printf("    %s %d\n", enumeration_elem->name, enumeration_elem->val);
             printf("    else if (!strcmp(str, \"%s\")) {*val = %d ; return 1;}\n", enumeration_elem->name, enumeration_elem->val);
         }
         printf("    else return 0;\n");
@@ -248,17 +245,14 @@ void dump_state(void)
     {
         struct function *function = functions + index;
 
-//      printf("function %s\n", function->name);
         printf("    else if (!strcmp(argv[0], \"%s\")) {\n", function->name);
 
         for (int index = 0; index < function->items; ++index)
         {
             struct type_param *type_param = function->type_params + index;
 
-//          printf("    ");
             if (type_param->main_args)
             {
-//              printf("main_args\n");
             }
             else
             {
@@ -317,13 +311,12 @@ void yyerror(const char *s)
 }
 
 char intro[] =
-
-"#include \"wrap_utils.h\"\n"
-"#include \"wrap.h\"\n"
-"#include <stdint.h>\n"
-"#include <string.h>\n"
-"#include <stdio.h>\n"
-"#define PARSE(TYPE, NAME, STR) TYPE NAME; memset(&NAME, 0, sizeof(NAME)); if (!parse_ ## TYPE(&NAME, STR)) { wrap_printf(\"failed to parse \\\"%s\\\" into %s\\n\", STR, #NAME); return -1;}";
+    "#include \"wrap_utils.h\"\n"
+    "#include \"wrap.h\"\n"
+    "#include <stdint.h>\n"
+    "#include <string.h>\n"
+    "#include <stdio.h>\n"
+    "#define PARSE(TYPE, NAME, STR) TYPE NAME; memset(&NAME, 0, sizeof(NAME)); if (!parse_ ## TYPE(&NAME, STR)) { wrap_printf(\"failed to parse \\\"%s\\\" into %s\\n\", STR, #NAME); return -1;}";
 
 int main()
 {

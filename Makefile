@@ -9,6 +9,6 @@ wrap.c: wrap.h parser
 test: wrap_utils.c test.c wrap.c
 	gcc -Wall -g $^ -o $@
 clean:
-	rm -f lex.yy.c wrap.tab.h wrap.tab.c parser wrap.c test
+	rm -f lex.yy.c wrap.tab.h wrap.tab.c parser wrap.c test tags
 	@echo done
 
