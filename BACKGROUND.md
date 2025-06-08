@@ -1,3 +1,5 @@
+## Background
+
 It's often useful to add a command processor to interact with a long
 running program. Sometimes these turn into large boilerplate "if / else
 if" trees. In a large project, these can get messy and tend to connect
