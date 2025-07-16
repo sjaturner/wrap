@@ -11,4 +11,5 @@ test: wrap_utils.c test.c wrap.c
 clean:
 	rm -f lex.yy.c wrap.tab.h wrap.tab.c parser wrap.c test tags
 	@echo done
-
+all: parser
+.PHONY: all
