@@ -240,6 +240,8 @@ void dump_state(void)
     }
 
     printf("static int inner_wrap_argc_argv(int argc, char *argv[]) {\n");
+    printf("    (void)argc;\n");
+    printf("    (void)argv;\n");
     printf("    if (0) {}\n");
     for (int index = 0; index < function_items; ++index)
     {
